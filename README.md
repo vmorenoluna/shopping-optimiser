@@ -37,7 +37,8 @@ These are what we optimize to find the best solution:
 
 ```
 shopping-optimised/
-├── build.sbt                              # SBT build configuration (Java project with Timefold 1.14.0)
+├── build.sbt                              # SBT build configuration (Java + JavaFX with Timefold 1.14.0)
+├── run-ui.bat                             # Windows batch script to run UI version
 ├── project/
 │   ├── build.properties                   # SBT version
 │   └── plugins.sbt                        # JUnit 5 integration plugin
@@ -51,7 +52,8 @@ shopping-optimised/
     │   │   │   └── WardrobeSolution.java  # Planning solution
     │   │   ├── solver/
     │   │   │   └── WardrobeConstraintProvider.java  # Constraint definitions
-    │   │   └── WardrobeOptimizerApp.java  # Main application
+    │   │   ├── WardrobeOptimizerApp.java  # Main console application
+    │   │   └── WardrobeOptimizerUI.java   # JavaFX GUI application
     │   └── resources/
     │       └── logback.xml                 # Logging configuration
     └── test/
@@ -92,28 +94,53 @@ Implements `ConstraintProvider` to define the rules using Constraint Streams API
 
 ## Running the Application
 
-1. Navigate to the project directory:
+The project includes two runnable examples:
+
+### 1. Console Application (Text-based)
+
+Navigate to the project directory and run:
 ```bash
 cd shopping-optimised
-```
-
-2. Run using SBT:
-```bash
 sbt run
 ```
 
-3. Run tests:
-```bash
-sbt test
-```
-
-The application will:
+The console application will:
 - Generate 500 clothing items with variety in styles, colors, and categories
 - Set a budget of $120 (configurable)
 - Display inventory statistics with histograms
 - Run the Timefold solver for up to 60 seconds or until optimal solution found
 - Display the optimal selection of items
 - Show the number of outfit combinations possible
+
+### 2. Graphical UI Application (JavaFX)
+
+To run the graphical UI version with visual clothing representations:
+
+**Windows:**
+```bash
+run-ui.bat
+```
+
+**Or manually:**
+```bash
+sbt "set fork := false" "runMain com.shoppingoptimiser.WardrobeOptimizerUI"
+```
+
+**Note:** The UI version requires `fork := false` to properly load JavaFX modules.
+
+The UI application features:
+- Visual representation of clothing items (tops, bottoms, shoes, outerwear, accessories)
+- Color-coded items based on actual colors
+- Real-time solver progress tracking
+- Interactive "Solve" button to start optimization
+- Split view showing inventory and selected solution
+- Detailed solver log
+- Visual indicators for selected items and out-of-stock items
+
+### 3. Run Tests
+```bash
+sbt test
+```
 
 **Problem Scale**: 500 entities, 500 variables, ~3.27 × 10^150 possible combinations
 
