@@ -20,6 +20,7 @@ import java.util.Set;
  * 2. Must have at least 1 TOP, 1 BOTTOM, and 1 SHOES (essentials for a complete outfit)
  * 3. Items must be in stock in your size
  * 4. Top and bottom cannot be the same color
+ * 5. Bottom and shoes cannot be the same color
  *
  * SOFT CONSTRAINTS (what we optimize):
  * 1. Maximize number of outfit combinations you can create
@@ -38,6 +39,7 @@ public class WardrobeConstraintProvider implements ConstraintProvider {
                 mustHaveAtLeastOneShoes(constraintFactory),
                 mustBeInStockConstraint(constraintFactory),
                 topAndBottomDifferentColors(constraintFactory),
+                bottomAndShoesDifferentColors(constraintFactory),
 
                 // Soft constraints
                 maximizeOutfitCombinations(constraintFactory),
@@ -131,6 +133,24 @@ public class WardrobeConstraintProvider implements ConstraintProvider {
                                 top.getColor().equalsIgnoreCase(bottom.getColor())))
                 .penalize(HardSoftScore.ONE_HARD, (top, bottom) -> 1000)
                 .asConstraint("Top and bottom must have different colors");
+    }
+
+    /**
+     * Hard constraint: Bottom and shoes cannot be the same color
+     * Penalizes when a selected bottom and selected shoes have the same color
+     */
+    Constraint bottomAndShoesDifferentColors(ConstraintFactory constraintFactory) {
+        return constraintFactory.forEach(ClothingItem.class)
+                .filter(item -> item.getSelected() != null && item.getSelected())
+                .filter(item -> item.getCategory() == ClothingCategory.BOTTOM)
+                .join(ClothingItem.class,
+                        Joiners.filtering((bottom, shoes) ->
+                                shoes.getSelected() != null &&
+                                shoes.getSelected() &&
+                                shoes.getCategory() == ClothingCategory.SHOES &&
+                                bottom.getColor().equalsIgnoreCase(shoes.getColor())))
+                .penalize(HardSoftScore.ONE_HARD, (bottom, shoes) -> 1000)
+                .asConstraint("Bottom and shoes must have different colors");
     }
 
     // ==================== SOFT CONSTRAINTS ====================

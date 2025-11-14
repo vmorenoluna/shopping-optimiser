@@ -318,6 +318,111 @@ public class WardrobeConstraintProviderTest {
                 .penalizesBy(1000);
     }
 
+    @Test
+    public void bottomAndShoesDifferentColors_differentColors_noPenalty() {
+        ClothingItem blackBottom = createItem("1", "Black Pants", ClothingCategory.BOTTOM, 50.0, "black", true, false);
+        blackBottom.setSelected(true);
+
+        ClothingItem brownShoes = createItem("2", "Brown Sneakers", ClothingCategory.SHOES, 80.0, "brown", true, false);
+        brownShoes.setSelected(true);
+
+        constraintVerifier.verifyThat(WardrobeConstraintProvider::bottomAndShoesDifferentColors)
+                .given(blackBottom, brownShoes)
+                .penalizesBy(0);
+    }
+
+    @Test
+    public void bottomAndShoesDifferentColors_sameColor_penalized() {
+        ClothingItem blackBottom = createItem("1", "Black Pants", ClothingCategory.BOTTOM, 50.0, "black", true, false);
+        blackBottom.setSelected(true);
+
+        ClothingItem blackShoes = createItem("2", "Black Sneakers", ClothingCategory.SHOES, 80.0, "black", true, false);
+        blackShoes.setSelected(true);
+
+        constraintVerifier.verifyThat(WardrobeConstraintProvider::bottomAndShoesDifferentColors)
+                .given(blackBottom, blackShoes)
+                .penalizesBy(1000);
+    }
+
+    @Test
+    public void bottomAndShoesDifferentColors_sameColorCaseInsensitive_penalized() {
+        ClothingItem blackBottom = createItem("1", "Black Pants", ClothingCategory.BOTTOM, 50.0, "BLACK", true, false);
+        blackBottom.setSelected(true);
+
+        ClothingItem blackShoes = createItem("2", "Black Sneakers", ClothingCategory.SHOES, 80.0, "black", true, false);
+        blackShoes.setSelected(true);
+
+        constraintVerifier.verifyThat(WardrobeConstraintProvider::bottomAndShoesDifferentColors)
+                .given(blackBottom, blackShoes)
+                .penalizesBy(1000);
+    }
+
+    @Test
+    public void bottomAndShoesDifferentColors_multipleBottomsAndShoesSameColor_penalizedMultipleTimes() {
+        ClothingItem blackBottom1 = createItem("1", "Black Pants", ClothingCategory.BOTTOM, 50.0, "black", true, false);
+        blackBottom1.setSelected(true);
+
+        ClothingItem blackBottom2 = createItem("2", "Black Jeans", ClothingCategory.BOTTOM, 50.0, "black", true, false);
+        blackBottom2.setSelected(true);
+
+        ClothingItem blackShoes1 = createItem("3", "Black Sneakers", ClothingCategory.SHOES, 80.0, "black", true, false);
+        blackShoes1.setSelected(true);
+
+        ClothingItem blackShoes2 = createItem("4", "Black Boots", ClothingCategory.SHOES, 90.0, "black", true, false);
+        blackShoes2.setSelected(true);
+
+        // Each bottom paired with each shoe: 2 bottoms * 2 shoes * 1000 = 4000
+        constraintVerifier.verifyThat(WardrobeConstraintProvider::bottomAndShoesDifferentColors)
+                .given(blackBottom1, blackBottom2, blackShoes1, blackShoes2)
+                .penalizesBy(4000);
+    }
+
+    @Test
+    public void bottomAndShoesDifferentColors_onlyBottomSelected_noPenalty() {
+        ClothingItem blackBottom = createItem("1", "Black Pants", ClothingCategory.BOTTOM, 50.0, "black", true, false);
+        blackBottom.setSelected(true);
+
+        ClothingItem blackShoes = createItem("2", "Black Sneakers", ClothingCategory.SHOES, 80.0, "black", true, false);
+        blackShoes.setSelected(false);
+
+        constraintVerifier.verifyThat(WardrobeConstraintProvider::bottomAndShoesDifferentColors)
+                .given(blackBottom, blackShoes)
+                .penalizesBy(0);
+    }
+
+    @Test
+    public void bottomAndShoesDifferentColors_onlyShoesSelected_noPenalty() {
+        ClothingItem blackBottom = createItem("1", "Black Pants", ClothingCategory.BOTTOM, 50.0, "black", true, false);
+        blackBottom.setSelected(false);
+
+        ClothingItem blackShoes = createItem("2", "Black Sneakers", ClothingCategory.SHOES, 80.0, "black", true, false);
+        blackShoes.setSelected(true);
+
+        constraintVerifier.verifyThat(WardrobeConstraintProvider::bottomAndShoesDifferentColors)
+                .given(blackBottom, blackShoes)
+                .penalizesBy(0);
+    }
+
+    @Test
+    public void bottomAndShoesDifferentColors_mixedColorCombinations_partiallyPenalized() {
+        ClothingItem blackBottom = createItem("1", "Black Pants", ClothingCategory.BOTTOM, 50.0, "black", true, false);
+        blackBottom.setSelected(true);
+
+        ClothingItem navyBottom = createItem("2", "Navy Pants", ClothingCategory.BOTTOM, 50.0, "navy", true, false);
+        navyBottom.setSelected(true);
+
+        ClothingItem blackShoes = createItem("3", "Black Sneakers", ClothingCategory.SHOES, 80.0, "black", true, false);
+        blackShoes.setSelected(true);
+
+        ClothingItem brownShoes = createItem("4", "Brown Boots", ClothingCategory.SHOES, 90.0, "brown", true, false);
+        brownShoes.setSelected(true);
+
+        // Only black bottom + black shoes = 1 * 1000 = 1000
+        constraintVerifier.verifyThat(WardrobeConstraintProvider::bottomAndShoesDifferentColors)
+                .given(blackBottom, navyBottom, blackShoes, brownShoes)
+                .penalizesBy(1000);
+    }
+
     // ==================== SOFT CONSTRAINT TESTS ====================
 
     @Test
