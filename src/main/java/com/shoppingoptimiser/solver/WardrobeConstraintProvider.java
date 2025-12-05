@@ -25,7 +25,6 @@ import java.util.Set;
  * SOFT CONSTRAINTS (what we optimize):
  * 1. Maximize number of outfit combinations you can create
  * 2. Prefer coordinated colors that work well together
- * 3. Match your style preferences where possible
  */
 public class WardrobeConstraintProvider implements ConstraintProvider {
 
@@ -43,8 +42,7 @@ public class WardrobeConstraintProvider implements ConstraintProvider {
 
                 // Soft constraints
                 maximizeOutfitCombinations(constraintFactory),
-                coordinatedColors(constraintFactory),
-                matchStylePreferences(constraintFactory)
+                coordinatedColors(constraintFactory)
         };
     }
 
@@ -185,16 +183,5 @@ public class WardrobeConstraintProvider implements ConstraintProvider {
                     return 1;
                 })
                 .asConstraint("Coordinated colors");
-    }
-
-    /**
-     * Soft constraint: Match user's style preferences
-     * Reward selecting items that match the user's preferred styles
-     */
-    Constraint matchStylePreferences(ConstraintFactory constraintFactory) {
-        return constraintFactory.forEach(ClothingItem.class)
-                .filter(item -> item.getSelected() != null && item.getSelected())
-                .reward(HardSoftScore.ONE_SOFT, item -> 3)
-                .asConstraint("Match style preferences");
     }
 }

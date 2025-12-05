@@ -546,33 +546,6 @@ public class WardrobeConstraintProviderTest {
                 .rewardsWith(5);
     }
 
-    @Test
-    public void matchStylePreferences_selectedItems_rewarded() {
-        ClothingItem item1 = createItem("1", "Casual Shirt", ClothingCategory.TOP, 50.0, "casual", true, false);
-        item1.setSelected(true);
-
-        ClothingItem item2 = createItem("2", "Formal Pants", ClothingCategory.BOTTOM, 50.0, "formal", true, false);
-        item2.setSelected(true);
-
-        // 2 items selected: 2 * 3 = 6
-        constraintVerifier.verifyThat(WardrobeConstraintProvider::matchStylePreferences)
-                .given(item1, item2)
-                .rewardsWith(6);
-    }
-
-    @Test
-    public void matchStylePreferences_noSelectedItems_noReward() {
-        ClothingItem item1 = createItem("1", "Casual Shirt", ClothingCategory.TOP, 50.0, "casual", true, false);
-        item1.setSelected(false);
-
-        ClothingItem item2 = createItem("2", "Formal Pants", ClothingCategory.BOTTOM, 50.0, "formal", true, false);
-        item2.setSelected(false);
-
-        constraintVerifier.verifyThat(WardrobeConstraintProvider::matchStylePreferences)
-                .given(item1, item2)
-                .rewardsWith(0);
-    }
-
     // ==================== HELPER METHODS ====================
 
     private ClothingItem createItem(String id, String name, ClothingCategory category,
